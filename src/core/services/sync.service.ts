@@ -56,4 +56,32 @@ export class SyncService {
     const settings = await this.getSettings();
     return settings.timeZone || "Asia/Shanghai";
   }
+
+  /**
+   * List all projects
+   */
+  async listProjects(): Promise<Dida365Project[]> {
+    const result = await this.fullSync();
+    return result.projects;
+  }
+
+  /**
+   * Get a project with its tasks
+   */
+  async getProjectWithTasks(
+    projectId: string
+  ): Promise<{ project: Dida365Project | undefined; tasks: Dida365Task[] }> {
+    const result = await this.fullSync();
+    const project = result.projects.find((p) => p.id === projectId);
+    const tasks = result.tasks.filter((t) => t.projectId === projectId);
+    return { project, tasks };
+  }
+
+  /**
+   * Get a single task by ID
+   */
+  async getTask(taskId: string): Promise<Dida365Task | undefined> {
+    const result = await this.fullSync();
+    return result.tasks.find((t) => t.id === taskId);
+  }
 }

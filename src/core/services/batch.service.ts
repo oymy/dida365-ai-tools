@@ -18,6 +18,30 @@ import type {
  * Uses private API endpoints
  */
 export class BatchService {
+  // ---- Single Task Operations ----
+
+  async createTask(
+    task: Partial<Dida365Task> & { title: string; projectId: string }
+  ): Promise<unknown> {
+    return batchTaskOperation({ add: [task as Dida365Task] });
+  }
+
+  async updateTask(
+    task: Partial<Dida365Task> & { id: string; projectId: string }
+  ): Promise<unknown> {
+    return batchTaskOperation({ update: [task as Dida365Task] });
+  }
+
+  async completeTask(taskId: string, projectId: string): Promise<unknown> {
+    return batchTaskOperation({
+      update: [{ id: taskId, projectId, status: 2 } as Dida365Task],
+    });
+  }
+
+  async deleteTask(taskId: string, projectId: string): Promise<unknown> {
+    return batchTaskOperation({ delete: [{ taskId, projectId }] });
+  }
+
   // ---- Task Batch Operations ----
 
   /**

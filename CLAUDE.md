@@ -16,12 +16,12 @@ There are no unit tests. CI validates that the project builds and that CLI help 
 
 ## Architecture
 
-This is a dual-mode application providing both an **MCP Server** (26 tools, stdio transport) and a **CLI** (30+ subcommands via Commander.js) for managing Dida365 (滴答清单/TickTick CN) tasks. Both interfaces share a unified core layer.
+This is a dual-mode application providing both an **MCP Server** (26 tools, stdio transport) and a **CLI** (30+ subcommands via Commander.js) for managing Dida365 (滴答清单/TickTick CN) tasks. Both interfaces share a unified core layer. All API calls go through Dida365's private API with cookie-based authentication.
 
 ### Three-Layer Structure
 
 ```
-src/core/     →  Shared business logic (API client, auth, services, types)
+src/core/     →  Shared business logic (API client, token store, services, types)
 src/mcp/      →  Thin MCP protocol wrapper around core (tool registrations)
 src/cli/      →  Thin Commander.js wrapper around core (command registrations)
 ```
@@ -30,18 +30,18 @@ src/cli/      →  Thin Commander.js wrapper around core (command registrations)
 
 ### Core Layer
 
-- **api-client.ts** — Central HTTP layer with 19 endpoints across two API bases:
-  - Open API (`https://api.dida365.com/open/v1/`) — 7 official, stable endpoints
-  - Private API (`https://api.dida365.com/api/v2/`) — 12 unofficial endpoints that mimic the web client (includes device headers)
-- **auth.ts** — OAuth 2.0 flow (authorize URL → code exchange → Bearer token)
-- **token-store.ts** — Persists tokens to `~/.dida365/token.json`
-- **config.ts** — Loads `DIDA365_CLIENT_ID`, `DIDA365_CLIENT_SECRET`, `DIDA365_REDIRECT_URI` from `.env` or environment
-- **types.ts** — 15 TypeScript interfaces for all domain models and API payloads
+- **api-client.ts** — HTTP layer for Dida365 private API (`https://api.dida365.com/api/v2/`). Uses cookie auth (`Cookie: t=<token>`) with web-client-mimicking headers. 12 API endpoints.
+- **token-store.ts** — Persists cookie token to `~/.dida365/token.json`
+- **types.ts** — TypeScript interfaces for all domain models and API payloads
 - **services/** — Feature-organized business logic:
+  - `sync.service.ts` — Full sync, user settings, project/task queries via batchCheck
+  - `batch.service.ts` — Task CRUD, bulk operations on tasks/projects/folders
   - `completed.service.ts` — Completed task queries (by date/range/today/week)
-  - `sync.service.ts` — Full sync and user settings
   - `tag.service.ts` — Tag CRUD, renaming, merging, nesting
-  - `batch.service.ts` — Bulk operations on tasks, projects, folders
+
+### Authentication
+
+Single method: cookie token from browser. User copies the `t` cookie value from dida365.com DevTools and runs `dida365 auth cookie <value>`.
 
 ### Adding a New Endpoint
 
@@ -57,13 +57,11 @@ src/cli/      →  Thin Commander.js wrapper around core (command registrations)
 |--------|-------|---------|
 | `dida365-ai-tools` / `dida365-mcp` | `build/mcp/index.js` | MCP server (stdio) |
 | `dida365` | `build/cli/index.js` | CLI tool |
-| Library import | `build/core/api-client.js` | Programmatic API |
 
 ## Key Conventions
 
 - **ES Modules** throughout (`"type": "module"` in package.json)
 - **TypeScript strict mode** — no implicit any
 - **Node 16 module resolution** (tsconfig `module: "Node16"`)
-- Private API endpoints should be clearly marked as experimental
 - MCP tool handlers return `{ content: [...], isError?: true }` format
 - CLI commands use `formatError()` + `process.exit(1)` for error handling

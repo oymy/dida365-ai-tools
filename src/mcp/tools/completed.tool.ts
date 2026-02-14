@@ -9,8 +9,7 @@ export function registerCompletedTools(server: McpServer) {
     "dida365_get_completed_tasks",
     {
       description:
-        "Get completed tasks by date or date range. " +
-        "WARNING: Uses private API that may change without notice.",
+        "Get completed tasks by date or date range.",
       inputSchema: {
         date: z
           .string()
@@ -96,8 +95,7 @@ export function registerCompletedTools(server: McpServer) {
     "dida365_get_completed_today",
     {
       description:
-        "Get tasks completed today. " +
-        "WARNING: Uses private API that may change without notice.",
+        "Get tasks completed today.",
       inputSchema: {
         timezone: z
           .string()
@@ -148,8 +146,7 @@ export function registerCompletedTools(server: McpServer) {
     "dida365_get_completed_this_week",
     {
       description:
-        "Get tasks completed this week (Sunday to Saturday). " +
-        "WARNING: Uses private API that may change without notice.",
+        "Get tasks completed this week (Sunday to Saturday).",
       inputSchema: {
         timezone: z
           .string()

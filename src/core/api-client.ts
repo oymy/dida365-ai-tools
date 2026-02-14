@@ -1,10 +1,6 @@
 import { loadToken } from "./token-store.js";
 import type {
   Dida365Task,
-  Dida365Project,
-  Dida365Tag,
-  Dida365ProjectGroup,
-  ProjectData,
   CompletedTasksParams,
   BatchCheckResponse,
   BatchTaskPayload,
@@ -17,13 +13,8 @@ import type {
 } from "./types.js";
 import { randomBytes } from "crypto";
 
-// Official Open API
-const OPEN_API_BASE_URL = "https://api.dida365.com";
+const API_BASE_URL = "https://api.dida365.com/api/v2";
 
-// Private API (v2) - Unofficial, may change without notice
-const PRIVATE_API_BASE_URL = "https://api.dida365.com/api/v2";
-
-// Private API Headers (mimicking web client)
 const PRIVATE_HEADERS = {
   "User-Agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:95.0) Gecko/20100101 Firefox/95.0",
@@ -40,34 +31,23 @@ const PRIVATE_HEADERS = {
   }),
 };
 
-async function getAuthHeader(): Promise<string> {
-  const token = await loadToken();
-  if (!token) {
-    throw new Error(
-      "Not authenticated. Please run the dida365_auth tool first."
-    );
-  }
-  return `Bearer ${token.access_token}`;
-}
-
 async function apiRequest<T>(
   method: string,
   path: string,
-  body?: unknown,
-  usePrivateAPI: boolean = false
+  body?: unknown
 ): Promise<T> {
-  const authorization = await getAuthHeader();
-  const baseUrl = usePrivateAPI ? PRIVATE_API_BASE_URL : OPEN_API_BASE_URL;
+  const tokenData = await loadToken();
+  if (!tokenData) {
+    throw new Error(
+      "Not authenticated. Run 'dida365 auth cookie <token>' first."
+    );
+  }
 
   const headers: Record<string, string> = {
-    Authorization: authorization,
     "Content-Type": "application/json",
+    Cookie: `t=${tokenData.token}`,
+    ...PRIVATE_HEADERS,
   };
-
-  // Add private API headers if needed
-  if (usePrivateAPI) {
-    Object.assign(headers, PRIVATE_HEADERS);
-  }
 
   const options: RequestInit = {
     method,
@@ -78,7 +58,7 @@ async function apiRequest<T>(
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${baseUrl}${path}`, options);
+  const response = await fetch(`${API_BASE_URL}${path}`, options);
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -92,100 +72,19 @@ async function apiRequest<T>(
   return JSON.parse(text) as T;
 }
 
-// ============================================================
-// Official Open API
-// ============================================================
-
-// ---- Project APIs (Open) ----
-
-export async function listProjects(): Promise<Dida365Project[]> {
-  return apiRequest<Dida365Project[]>("GET", "/open/v1/project");
-}
-
-export async function getProjectData(
-  projectId: string
-): Promise<ProjectData> {
-  return apiRequest<ProjectData>(
-    "GET",
-    `/open/v1/project/${projectId}/data`
-  );
-}
-
-// ---- Task APIs (Open) ----
-
-export async function getTask(
-  projectId: string,
-  taskId: string
-): Promise<Dida365Task> {
-  return apiRequest<Dida365Task>(
-    "GET",
-    `/open/v1/project/${projectId}/task/${taskId}`
-  );
-}
-
-export async function createTask(
-  task: Partial<Dida365Task> & { title: string; projectId: string }
-): Promise<Dida365Task> {
-  return apiRequest<Dida365Task>("POST", "/open/v1/task", task);
-}
-
-export async function updateTask(
-  taskId: string,
-  task: Partial<Dida365Task> & { id: string; projectId: string }
-): Promise<Dida365Task> {
-  return apiRequest<Dida365Task>("POST", `/open/v1/task/${taskId}`, task);
-}
-
-export async function completeTask(
-  projectId: string,
-  taskId: string
-): Promise<void> {
-  await apiRequest<void>(
-    "POST",
-    `/open/v1/project/${projectId}/task/${taskId}/complete`
-  );
-}
-
-export async function deleteTask(
-  projectId: string,
-  taskId: string
-): Promise<void> {
-  await apiRequest<void>(
-    "DELETE",
-    `/open/v1/project/${projectId}/task/${taskId}`
-  );
-}
-
-// ============================================================
-// Private API (v2) - Unofficial, may change without notice
-// ============================================================
-
-// ---- 1. User Settings ----
-// GET /user/preferences/settings
+// ---- User Settings ----
 
 export async function getUserSettings(): Promise<UserSettings> {
-  return apiRequest<UserSettings>(
-    "GET",
-    "/user/preferences/settings",
-    undefined,
-    true
-  );
+  return apiRequest<UserSettings>("GET", "/user/preferences/settings");
 }
 
-// ---- 2. Batch Sync ----
-// GET /batch/check/0 - Full sync of all data
+// ---- Batch Sync ----
 
 export async function batchCheck(): Promise<BatchCheckResponse> {
-  return apiRequest<BatchCheckResponse>(
-    "GET",
-    "/batch/check/0",
-    undefined,
-    true
-  );
+  return apiRequest<BatchCheckResponse>("GET", "/batch/check/0");
 }
 
-// ---- 3. Completed Tasks ----
-// GET /project/all/completed
+// ---- Completed Tasks ----
 
 export async function getCompletedTasks(
   params: CompletedTasksParams
@@ -198,108 +97,87 @@ export async function getCompletedTasks(
 
   return apiRequest<Dida365Task[]>(
     "GET",
-    `/project/all/completed?${queryParams}`,
-    undefined,
-    true
+    `/project/all/completed?${queryParams}`
   );
 }
 
-// ---- 4. Batch Task Operations ----
-// POST /batch/task
+// ---- Batch Task Operations ----
 
 export async function batchTaskOperation(
   payload: BatchTaskPayload
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/task", payload, true);
+  return apiRequest<unknown>("POST", "/batch/task", payload);
 }
 
-// ---- 5. Task Parent (Subtask) ----
-// POST /batch/taskParent
+// ---- Task Parent (Subtask) ----
 
 export async function batchSetTaskParent(
   items: TaskParentPayload[]
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/taskParent", items, true);
+  return apiRequest<unknown>("POST", "/batch/taskParent", items);
 }
 
-// ---- 6. Task Move Between Projects ----
-// POST /batch/taskProject
+// ---- Task Move Between Projects ----
 
 export async function batchMoveTask(
   items: TaskMovePayload[]
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/taskProject", items, true);
+  return apiRequest<unknown>("POST", "/batch/taskProject", items);
 }
 
-// ---- 7. Batch Project Operations ----
-// POST /batch/project
+// ---- Batch Project Operations ----
 
 export async function batchProjectOperation(
   payload: BatchProjectPayload
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/project", payload, true);
+  return apiRequest<unknown>("POST", "/batch/project", payload);
 }
 
-// ---- 8. Batch Project Group/Folder Operations ----
-// POST /batch/projectGroup
+// ---- Batch Project Group/Folder Operations ----
 
 export async function batchProjectGroupOperation(
   payload: BatchProjectGroupPayload
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/projectGroup", payload, true);
+  return apiRequest<unknown>("POST", "/batch/projectGroup", payload);
 }
 
-// ---- 9. Batch Tag Operations ----
-// POST /batch/tag
+// ---- Batch Tag Operations ----
 
 export async function batchTagOperation(
   payload: BatchTagPayload
 ): Promise<unknown> {
-  return apiRequest<unknown>("POST", "/batch/tag", payload, true);
+  return apiRequest<unknown>("POST", "/batch/tag", payload);
 }
 
-// ---- 10. Tag Rename ----
-// PUT /tag/rename
+// ---- Tag Rename ----
 
 export async function renameTag(
   oldName: string,
   newName: string
 ): Promise<unknown> {
-  return apiRequest<unknown>(
-    "PUT",
-    "/tag/rename",
-    { name: oldName, newName },
-    true
-  );
+  return apiRequest<unknown>("PUT", "/tag/rename", {
+    name: oldName,
+    newName,
+  });
 }
 
-// ---- 11. Tag Merge ----
-// PUT /tag/merge
+// ---- Tag Merge ----
 
 export async function mergeTags(
   fromTag: string,
   toTag: string
 ): Promise<unknown> {
-  return apiRequest<unknown>(
-    "PUT",
-    "/tag/merge",
-    { from: fromTag, to: toTag },
-    true
-  );
+  return apiRequest<unknown>("PUT", "/tag/merge", {
+    from: fromTag,
+    to: toTag,
+  });
 }
 
-// ---- 12. Tag Delete ----
-// DELETE /tag
+// ---- Tag Delete ----
 
 export async function deleteTags(tagNames: string[]): Promise<unknown> {
-  // The API expects tag names as query params: /tag?name=tag1&name=tag2
   const params = new URLSearchParams();
   tagNames.forEach((name) => params.append("name", name));
 
-  return apiRequest<unknown>(
-    "DELETE",
-    `/tag?${params}`,
-    undefined,
-    true
-  );
+  return apiRequest<unknown>("DELETE", `/tag?${params}`);
 }

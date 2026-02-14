@@ -1,8 +1,10 @@
 import { Command } from "commander";
-import { listProjects, getProjectData } from "../../core/api-client.js";
+import { SyncService } from "../../core/services/sync.service.js";
 import { formatProjectList, formatJSON, formatError } from "../utils/output.js";
 
 export function projectCommands(program: Command) {
+  const syncService = new SyncService();
+
   const project = program
     .command("project")
     .description("Manage projects");
@@ -13,7 +15,7 @@ export function projectCommands(program: Command) {
     .option("-j, --json", "Output as JSON")
     .action(async (options) => {
       try {
-        const projects = await listProjects();
+        const projects = await syncService.listProjects();
 
         if (options.json) {
           console.log(formatJSON(projects));
@@ -32,7 +34,7 @@ export function projectCommands(program: Command) {
     .option("-j, --json", "Output as JSON")
     .action(async (projectId: string, options) => {
       try {
-        const data = await getProjectData(projectId);
+        const data = await syncService.getProjectWithTasks(projectId);
 
         if (options.json) {
           console.log(formatJSON(data));

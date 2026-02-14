@@ -9,7 +9,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_list_tags",
     {
       description:
-        "List all tags in your Dida365 account. WARNING: Uses private API.",
+        "List all tags in your Dida365 account. ",
     },
     async () => {
       try {
@@ -37,7 +37,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_create_tag",
     {
       description:
-        "Create a new tag. WARNING: Uses private API.",
+        "Create a new tag. ",
       inputSchema: {
         name: z.string().describe("Tag name"),
         color: z.string().optional().describe("Tag color (e.g., '#ff0000')"),
@@ -70,7 +70,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_rename_tag",
     {
       description:
-        "Rename an existing tag. WARNING: Uses private API.",
+        "Rename an existing tag. ",
       inputSchema: {
         oldName: z.string().describe("Current tag name"),
         newName: z.string().describe("New tag name"),
@@ -105,7 +105,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_update_tag",
     {
       description:
-        "Update tag properties (color, parent). WARNING: Uses private API.",
+        "Update tag properties (color, parent). ",
       inputSchema: {
         name: z.string().describe("Tag name to update"),
         color: z.string().optional().describe("New color (e.g., '#ff0000')"),
@@ -141,7 +141,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_merge_tags",
     {
       description:
-        "Merge one tag into another. Tasks with the source tag will be updated to the target tag. WARNING: Uses private API.",
+        "Merge one tag into another. Tasks with the source tag will be updated to the target tag. ",
       inputSchema: {
         fromTag: z.string().describe("Source tag name (will be deleted)"),
         toTag: z.string().describe("Target tag name (will remain)"),
@@ -176,7 +176,7 @@ export function registerTagTools(server: McpServer) {
     "dida365_delete_tag",
     {
       description:
-        "Delete one or more tags. WARNING: Uses private API.",
+        "Delete one or more tags. ",
       inputSchema: {
         names: z
           .array(z.string())

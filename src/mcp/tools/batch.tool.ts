@@ -11,7 +11,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_move_task",
     {
       description:
-        "Move a task from one project to another. WARNING: Uses private API.",
+        "Move a task from one project to another.",
       inputSchema: {
         taskId: z.string().describe("The task ID to move"),
         fromProjectId: z.string().describe("Current project ID"),
@@ -47,7 +47,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_set_subtask",
     {
       description:
-        "Set a task as a subtask of another task. WARNING: Uses private API.",
+        "Set a task as a subtask of another task.",
       inputSchema: {
         taskId: z.string().describe("The task ID to become a subtask"),
         parentId: z.string().describe("The parent task ID"),
@@ -83,7 +83,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_batch_delete_tasks",
     {
       description:
-        "Delete multiple tasks at once. WARNING: Uses private API.",
+        "Delete multiple tasks at once.",
       inputSchema: {
         items: z
           .array(
@@ -126,7 +126,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_batch_create_project",
     {
       description:
-        "Create a new project via batch API. WARNING: Uses private API.",
+        "Create a new project via batch API.",
       inputSchema: {
         name: z.string().describe("Project name"),
         color: z.string().optional().describe("Project color"),
@@ -172,7 +172,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_batch_delete_projects",
     {
       description:
-        "Delete multiple projects. WARNING: Uses private API. This is destructive!",
+        "Delete multiple projects. This is destructive!",
       inputSchema: {
         projectIds: z
           .array(z.string())
@@ -210,7 +210,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_create_project_group",
     {
       description:
-        "Create a project group (folder) to organize projects. WARNING: Uses private API.",
+        "Create a project group (folder) to organize projects.",
       inputSchema: {
         name: z.string().describe("Group/folder name"),
       },
@@ -244,7 +244,7 @@ export function registerBatchTools(server: McpServer) {
     "dida365_delete_project_groups",
     {
       description:
-        "Delete project groups (folders). WARNING: Uses private API.",
+        "Delete project groups (folders).",
       inputSchema: {
         groupIds: z
           .array(z.string())

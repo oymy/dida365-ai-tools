@@ -1,85 +1,80 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { buildAuthUrl, exchangeCodeForToken } from "../../core/auth.js";
 import { saveToken, loadToken } from "../../core/token-store.js";
-import type { Dida365Config } from "../../core/types.js";
-import { randomUUID } from "crypto";
 
-export function registerAuthTool(server: McpServer, config: Dida365Config) {
+export function registerAuthTool(server: McpServer) {
   server.registerTool(
     "dida365_auth",
     {
       description:
         "Authenticate with Dida365. " +
-        "action='login': get the auth URL to open in browser. " +
-        "action='callback': exchange the authorization code for a token. " +
+        "action='cookie': set cookie token from browser DevTools. " +
         "action='status': check if already authenticated.",
       inputSchema: {
         action: z
-          .enum(["login", "callback", "status"])
-          .describe("login: generate auth URL; callback: exchange code for token; status: check auth state"),
-        code: z
+          .enum(["cookie", "status"])
+          .describe("cookie: set cookie token; status: check auth state"),
+        token: z
           .string()
           .optional()
-          .describe("The authorization code from the redirect URL (required for action='callback')"),
+          .describe(
+            "The cookie token value (the 't' cookie from dida365.com, required for action='cookie')"
+          ),
       },
     },
-    async ({ action, code }) => {
+    async ({ action, token }) => {
       if (action === "status") {
-        const token = await loadToken();
-        if (token) {
+        const tokenData = await loadToken();
+        if (tokenData) {
           return {
-            content: [{ type: "text" as const, text: "Authenticated. Token is present and saved." }],
+            content: [
+              {
+                type: "text" as const,
+                text: `Authenticated. Token saved at ${new Date(tokenData.saved_at).toLocaleString()}.`,
+              },
+            ],
           };
         }
         return {
-          content: [{ type: "text" as const, text: "Not authenticated. Use action='login' to start the OAuth flow." }],
-        };
-      }
-
-      if (action === "login") {
-        if (!config.clientId || !config.clientSecret) {
-          return {
-            content: [{
+          content: [
+            {
               type: "text" as const,
-              text: "Error: DIDA365_CLIENT_ID and DIDA365_CLIENT_SECRET must be set in environment variables or .env file.",
-            }],
-            isError: true,
-          };
-        }
-        const state = randomUUID();
-        const url = buildAuthUrl(config, state);
-        return {
-          content: [{
-            type: "text" as const,
-            text: [
-              "Please open this URL in your browser to authorize:",
-              "",
-              url,
-              "",
-              "After authorizing, you will be redirected. Copy the 'code' parameter from the redirect URL.",
-              "Then call this tool again with action='callback' and the code.",
-            ].join("\n"),
-          }],
+              text: "Not authenticated. Use action='cookie' to set your cookie token from browser DevTools.",
+            },
+          ],
         };
       }
 
-      if (action === "callback") {
-        if (!code) {
+      if (action === "cookie") {
+        if (!token) {
           return {
-            content: [{ type: "text" as const, text: "Error: 'code' parameter is required for action='callback'." }],
+            content: [
+              {
+                type: "text" as const,
+                text: "Error: 'token' parameter is required for action='cookie'.",
+              },
+            ],
             isError: true,
           };
         }
-        const tokenData = await exchangeCodeForToken(config, code);
-        await saveToken(tokenData);
+        await saveToken(token);
         return {
-          content: [{ type: "text" as const, text: "Authentication successful! Token has been saved. You can now use other Dida365 tools." }],
+          content: [
+            {
+              type: "text" as const,
+              text: "Cookie token saved! You can now use all Dida365 tools.",
+            },
+          ],
         };
       }
 
       return {
-        content: [{ type: "text" as const, text: "Unknown action. Use 'login', 'callback', or 'status'." }],
+        content: [
+          {
+            type: "text" as const,
+            text: "Unknown action. Use 'cookie' or 'status'.",
+          },
+        ],
         isError: true,
       };
     }

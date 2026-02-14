@@ -1,6 +1,6 @@
 ---
 name: dida365-cli
-description: 使用 Node.js CLI 管理滴答清单（Dida365）的任务、项目、标签等，支持官方 Open API 和私有 API（已完成任务按日期查询、全量同步、标签管理、批量操作等），适用于日常任务管理与自动化场景。
+description: 使用 Node.js CLI 管理滴答清单（Dida365）的任务、项目、标签等，支持已完成任务按日期查询、全量同步、标签管理、批量操作等，适用于日常任务管理与自动化场景。
 ---
 
 说明：以下调用方式均以 `dida365` 为 CLI 入口。
@@ -17,15 +17,14 @@ dida365 <command> [options]
 
 ## 1. 认证
 
-使用前必须先完成 OAuth 认证。
+使用前必须先设置 Cookie 认证。
 
 ```bash
-dida365 auth login              # 获取授权 URL，在浏览器中打开
-dida365 auth callback <code>    # 用回调 URL 中的 code 完成认证
+dida365 auth cookie <token>     # 设置 Cookie token 完成认证
 dida365 auth status             # 检查当前认证状态
 ```
 
-## 2. 项目管理（官方 API）
+## 2. 项目管理
 
 ```bash
 dida365 project list                    # 列出所有项目
@@ -34,7 +33,7 @@ dida365 project show <projectId>        # 查看项目详情和任务列表
 dida365 project show <projectId> --json
 ```
 
-## 3. 任务管理（官方 API）
+## 3. 任务管理
 
 ```bash
 # 创建任务
@@ -42,8 +41,8 @@ dida365 task create <title> -p <projectId>
 dida365 task create <title> -p <projectId> -c <content> --priority <0|1|3|5> -d <dueDate>
 
 # 查看任务
-dida365 task show <projectId> <taskId>
-dida365 task show <projectId> <taskId> --json
+dida365 task show <taskId>
+dida365 task show <taskId> --json
 
 # 完成任务
 dida365 task complete <projectId> <taskId>
@@ -59,9 +58,7 @@ dida365 task delete <projectId> <taskId>
 - `--priority <n>` — 优先级：0=无, 1=低, 3=中, 5=高
 - `-j, --json` — JSON 格式输出
 
-## 4. 已完成任务查询（私有 API）
-
-> ⚠️ 使用非官方 API，可能随时变更。
+## 4. 已完成任务查询
 
 ```bash
 dida365 completed today                              # 今天完成的
@@ -73,7 +70,7 @@ dida365 completed today --timezone "Asia/Shanghai"   # 指定时区
 dida365 completed today --json                       # JSON 输出
 ```
 
-## 5. 全量同步与用户设置（私有 API）
+## 5. 全量同步与用户设置
 
 ```bash
 dida365 sync all                # 一次拉取所有项目、任务、标签、文件夹
@@ -90,7 +87,7 @@ dida365 sync timezone           # 快速获取用户时区
 - `projectGroups` — 项目文件夹
 - `inboxId` — 收件箱项目 ID
 
-## 6. 标签管理（私有 API）
+## 6. 标签管理
 
 ```bash
 dida365 tag list                            # 列出所有标签
@@ -104,7 +101,7 @@ dida365 tag merge <fromTag> <toTag>         # 合并标签（fromTag 任务归�
 dida365 tag delete <name1> [name2...]       # 删除（支持多个）
 ```
 
-## 7. 批量操作（私有 API）
+## 7. 批量操作
 
 ### 任务批量操作
 

@@ -1,8 +1,10 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { listProjects, getProjectData } from "../../core/api-client.js";
+import { SyncService } from "../../core/services/sync.service.js";
 
 export function registerProjectTools(server: McpServer) {
+  const syncService = new SyncService();
+
   server.registerTool(
     "dida365_list_projects",
     {
@@ -11,9 +13,11 @@ export function registerProjectTools(server: McpServer) {
         "Use this to find the projectId needed for task operations.",
     },
     async () => {
-      const projects = await listProjects();
+      const projects = await syncService.listProjects();
       return {
-        content: [{ type: "text" as const, text: JSON.stringify(projects, null, 2) }],
+        content: [
+          { type: "text" as const, text: JSON.stringify(projects, null, 2) },
+        ],
       };
     }
   );
@@ -28,9 +32,11 @@ export function registerProjectTools(server: McpServer) {
       },
     },
     async ({ projectId }) => {
-      const data = await getProjectData(projectId);
+      const data = await syncService.getProjectWithTasks(projectId);
       return {
-        content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
+        content: [
+          { type: "text" as const, text: JSON.stringify(data, null, 2) },
+        ],
       };
     }
   );

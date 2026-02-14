@@ -1,6 +1,6 @@
 {
   "name": "dida365-ai-tools",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Dida365 AI Tools - MCP Server & CLI for 滴答清单, manage your tasks with Claude Code or command line",
   "type": "module",
   "bin": {
@@ -15,7 +15,6 @@
     "LICENSE",
     "README.md",
     "CHANGELOG.md",
-    ".env.example",
     "smithery.yaml",
     "server.json"
   ],
@@ -42,7 +41,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "commander": "^12.1.0",
-    "dotenv": "^16.4.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
@@ -54,12 +52,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools.git"
+    "url": "git+https://github.com/oymy/dida365-ai-tools.git"
   },
-  "homepage": "https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools#readme",
+  "homepage": "https://github.com/oymy/dida365-ai-tools#readme",
   "bugs": {
-    "url": "https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools/issues"
+    "url": "https://github.com/oymy/dida365-ai-tools/issues"
   },
-  "author": "YOUR_GITHUB_USERNAME",
+  "author": "oymy",
   "license": "MIT"
 }

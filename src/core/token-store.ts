@@ -6,7 +6,8 @@ import type { TokenData } from "./types.js";
 const TOKEN_DIR = join(homedir(), ".dida365");
 const TOKEN_FILE = join(TOKEN_DIR, "token.json");
 
-export async function saveToken(tokenData: TokenData): Promise<void> {
+export async function saveToken(token: string): Promise<void> {
+  const tokenData: TokenData = { token, saved_at: Date.now() };
   await mkdir(TOKEN_DIR, { recursive: true });
   await writeFile(TOKEN_FILE, JSON.stringify(tokenData, null, 2), "utf-8");
 }
@@ -14,9 +15,14 @@ export async function saveToken(tokenData: TokenData): Promise<void> {
 export async function loadToken(): Promise<TokenData | null> {
   try {
     const raw = await readFile(TOKEN_FILE, "utf-8");
-    const data = JSON.parse(raw) as TokenData;
-    if (data.access_token) {
-      return data;
+    const data = JSON.parse(raw);
+    // Support new format
+    if (data.token) {
+      return data as TokenData;
+    }
+    // Backward compat: migrate from old signon_token format
+    if (data.signon_token) {
+      return { token: data.signon_token, saved_at: data.signon_saved_at ?? data.saved_at ?? Date.now() };
     }
     return null;
   } catch {

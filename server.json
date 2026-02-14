@@ -1,35 +1,18 @@
 {
   "$schema": "https://schema.modelcontextprotocol.io/server.json",
-  "name": "io.github.YOUR_GITHUB_USERNAME/dida365-ai-tools",
-  "description": "Dida365 (TickTick CN) MCP Server - Manage tasks, projects, tags with 26 tools covering both Official and Private APIs",
-  "version": "2.0.0",
+  "name": "io.github.oymy/dida365-ai-tools",
+  "description": "Dida365 (TickTick CN) MCP Server - Manage tasks, projects, tags with 26 tools",
+  "version": "3.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools"
+    "url": "https://github.com/oymy/dida365-ai-tools"
   },
   "packages": [
     {
       "type": "npm",
       "package": "dida365-ai-tools",
-      "version": "2.0.0",
-      "transport": "stdio",
-      "env": {
-        "DIDA365_CLIENT_ID": {
-          "description": "OAuth Client ID from developer.dida365.com",
-          "required": true,
-          "sensitive": true
-        },
-        "DIDA365_CLIENT_SECRET": {
-          "description": "OAuth Client Secret from developer.dida365.com",
-          "required": true,
-          "sensitive": true
-        },
-        "DIDA365_REDIRECT_URI": {
-          "description": "OAuth redirect URI",
-          "required": false,
-          "sensitive": false
-        }
-      }
+      "version": "3.0.0",
+      "transport": "stdio"
     }
   ]
 }

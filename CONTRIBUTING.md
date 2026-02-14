@@ -12,23 +12,12 @@ cd dida365-ai-tools
 # Install dependencies
 npm install
 
-# Create .env file
-cp .env.example .env
-# Edit .env with your Dida365 API credentials
-
 # Build
 npm run build
 
 # Watch mode
 npm run dev
 ```
-
-## Getting Dida365 API Credentials
-
-1. Go to [Dida365 Developer Platform](https://developer.dida365.com/)
-2. Register your application
-3. Get your Client ID and Client Secret
-4. Set redirect URI to `http://localhost:8080/callback`
 
 ## Project Structure
 

@@ -14,18 +14,14 @@ const program = new Command();
 program
   .name("dida365")
   .description("Dida365 (TickTick CN) CLI tool - Manage your tasks from the command line")
-  .version("2.0.0");
+  .version("3.0.0");
 
-// Official API commands
 authCommands(program);
-taskCommands(program);
 projectCommands(program);
-
-// Private API commands
+taskCommands(program);
 completedCommands(program);
 syncCommands(program);
 tagCommands(program);
 batchCommands(program);
 
-// Parse command line arguments
 program.parse();

@@ -4,64 +4,38 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
 
-Dida365（滴答清单）的 MCP Server + CLI 工具，支持双模式运行：
+Dida365（滴答清单）v3.0.0 MCP Server + CLI 工具，使用私有 API + Cookie 认证：
 
 - **MCP Server** - 接入 Claude Code / Cursor / Windsurf，用自然语言管理任务
 - **CLI** - 命令行直接操作，可脚本化、可管道、可接入 OpenClaw
 
-借鉴了 [ticktick-py](https://github.com/lazeroffmichael/ticktick-py) 的私有 API 实现，覆盖了其全部 13 个私有端点。
+借鉴了 [ticktick-py](https://github.com/lazeroffmichael/ticktick-py) 的私有 API 实现。
 
 ## Features
 
-### Official Open API (Stable)
-
 | 功能 | MCP Tool | CLI Command |
 |------|----------|-------------|
-| OAuth 2.0 认证 | `dida365_auth` | `auth login / callback / status` |
+| Cookie 认证 | `dida365_auth` | `auth cookie <token> / status` |
 | 列出所有项目 | `dida365_list_projects` | `project list` |
 | 项目详情与任务 | `dida365_get_project_tasks` | `project show <id>` |
-| 查看任务 | `dida365_get_task` | `task show <pid> <tid>` |
+| 查看任务 | `dida365_get_task` | `task show <taskId>` |
 | 创建任务 | `dida365_create_task` | `task create <title> -p <pid>` |
 | 更新任务 | `dida365_update_task` | - |
 | 完成任务 | `dida365_complete_task` | `task complete <pid> <tid>` |
 | 删除任务 | `dida365_delete_task` | `task delete <pid> <tid>` |
-
-### Private API (Experimental)
-
-> 以下功能使用非官方 API (`/api/v2/*`)，借鉴自 ticktick-py，可能随时变更。
-
-**已完成任务查询**
-
-| 功能 | MCP Tool | CLI Command |
-|------|----------|-------------|
-| 按日期/范围查询 | `dida365_get_completed_tasks` | `completed date / range` |
+| 按日期/范围查询已完成 | `dida365_get_completed_tasks` | `completed date / range` |
 | 今天完成的任务 | `dida365_get_completed_today` | `completed today` |
 | 昨天完成的任务 | - | `completed yesterday` |
 | 本周完成的任务 | `dida365_get_completed_this_week` | `completed week` |
-
-**全量同步与设置**
-
-| 功能 | MCP Tool | CLI Command |
-|------|----------|-------------|
 | 全量同步（项目/任务/标签） | `dida365_sync` | `sync all` |
 | 获取用户设置 | `dida365_get_settings` | `sync settings` |
 | 获取时区 | - | `sync timezone` |
-
-**标签管理**
-
-| 功能 | MCP Tool | CLI Command |
-|------|----------|-------------|
 | 列出所有标签 | `dida365_list_tags` | `tag list` |
 | 创建标签 | `dida365_create_tag` | `tag create <name>` |
 | 重命名标签 | `dida365_rename_tag` | `tag rename <old> <new>` |
 | 更新标签（颜色/层级） | `dida365_update_tag` | `tag color / nest` |
 | 合并标签 | `dida365_merge_tags` | `tag merge <from> <to>` |
 | 删除标签 | `dida365_delete_tag` | `tag delete <names...>` |
-
-**批量操作**
-
-| 功能 | MCP Tool | CLI Command |
-|------|----------|-------------|
 | 移动任务到其他项目 | `dida365_move_task` | `batch move-task` |
 | 设置子任务 | `dida365_set_subtask` | `batch set-subtask` |
 | 批量删除任务 | `dida365_batch_delete_tasks` | `batch delete-tasks` |
@@ -75,11 +49,9 @@ Dida365（滴答清单）的 MCP Server + CLI 工具，支持双模式运行：
 ```
 src/
 ├── core/                          # 核心层（MCP 和 CLI 共享）
-│   ├── api-client.ts              # 19 个 API 端点（官方 7 + 私有 12）
-│   ├── auth.ts                    # OAuth 2.0
-│   ├── config.ts                  # 环境变量配置
-│   ├── token-store.ts             # Token 持久化
-│   ├── types.ts                   # 15 个 TypeScript 接口
+│   ├── api-client.ts              # 私有 API 端点
+│   ├── token-store.ts             # Cookie Token 持久化
+│   ├── types.ts                   # TypeScript 接口
 │   └── services/
 │       ├── completed.service.ts   # 已完成任务查询
 │       ├── sync.service.ts        # 全量同步 + 用户设置
@@ -100,7 +72,7 @@ src/
 └── cli/                           # CLI 入口（7 个命令组，30+ 子命令）
     ├── index.ts
     ├── commands/
-    │   ├── auth.cmd.ts            # auth login / callback / status
+    │   ├── auth.cmd.ts            # auth cookie / status
     │   ├── project.cmd.ts         # project list / show
     │   ├── task.cmd.ts            # task create / show / complete / delete
     │   ├── completed.cmd.ts       # completed today / yesterday / week / date / range
@@ -142,21 +114,24 @@ npm install
 npm run build
 ```
 
-## Configuration
+## Authentication
 
-### 1. Get API Credentials
+本项目使用 Dida365 私有 API，通过 Cookie 认证。获取步骤：
 
-在 [Dida365 Developer Platform](https://developer.dida365.com/) 注册应用，获取 Client ID 和 Secret。
+1. 打开 [dida365.com](https://dida365.com) 并登录
+2. 按 `F12` 打开开发者工具
+3. 切换到 **Application** (应用) 标签页
+4. 左侧找到 **Cookies** → `https://dida365.com`
+5. 复制名为 `t` 的 Cookie 值
 
-### 2. Set Environment Variables
+然后通过 CLI 设置认证：
 
-创建 `.env` 文件（或设置环境变量）：
-
-```env
-DIDA365_CLIENT_ID=your_client_id_here
-DIDA365_CLIENT_SECRET=your_client_secret_here
-DIDA365_REDIRECT_URI=http://localhost:8080/callback
+```bash
+dida365 auth cookie <your_cookie_value>
+dida365 auth status    # 验证认证状态
 ```
+
+或在 MCP 中使用 `dida365_auth` 工具设置 Cookie。
 
 ## Usage
 
@@ -181,11 +156,7 @@ claude mcp add dida365 -- dida365-mcp
   "mcpServers": {
     "dida365": {
       "command": "npx",
-      "args": ["-y", "dida365-ai-tools"],
-      "env": {
-        "DIDA365_CLIENT_ID": "your_client_id",
-        "DIDA365_CLIENT_SECRET": "your_client_secret"
-      }
+      "args": ["-y", "dida365-ai-tools"]
     }
   }
 }
@@ -200,8 +171,7 @@ Visit [smithery.ai](https://smithery.ai) and search for `dida365-ai-tools`.
 #### 认证
 
 ```bash
-dida365 auth login              # 获取授权 URL
-dida365 auth callback <code>    # 用授权码完成认证
+dida365 auth cookie <token>     # 设置 Cookie 认证
 dida365 auth status             # 检查认证状态
 ```
 
@@ -218,7 +188,7 @@ dida365 project show <id>       # 项目详情和任务
 ```bash
 dida365 task create "买菜" -p <projectId>
 dida365 task create "开会" -p <projectId> -c "讨论内容" --priority 5
-dida365 task show <projectId> <taskId>
+dida365 task show <taskId>
 dida365 task complete <projectId> <taskId>
 dida365 task delete <projectId> <taskId>
 ```
@@ -272,27 +242,6 @@ dida365 batch delete-projects <projectId1> <projectId2>
 dida365 batch create-folder "工作"
 dida365 batch delete-folders <groupId1> <groupId2>
 ```
-
-## Private API Coverage
-
-本项目完整借鉴了 [ticktick-py](https://github.com/lazeroffmichael/ticktick-py) 的全部 13 个私有 API 端点：
-
-| # | HTTP | Endpoint | 功能 | 状态 |
-|---|------|----------|------|------|
-| 1 | GET | `/user/preferences/settings` | 用户设置/时区 | ✅ |
-| 2 | GET | `/batch/check/0` | 全量同步 | ✅ |
-| 3 | GET | `/project/all/completed` | 按日期查询已完成任务 | ✅ |
-| 4 | POST | `/batch/task` | 批量删除任务 | ✅ |
-| 5 | POST | `/batch/taskParent` | 设置子任务关系 | ✅ |
-| 6 | POST | `/batch/taskProject` | 移动任务到其他项目 | ✅ |
-| 7 | POST | `/batch/project` | 批量项目操作 | ✅ |
-| 8 | POST | `/batch/projectGroup` | 项目文件夹管理 | ✅ |
-| 9 | POST | `/batch/tag` | 批量标签操作 | ✅ |
-| 10 | PUT | `/tag/rename` | 重命名标签 | ✅ |
-| 11 | PUT | `/tag/merge` | 合并标签 | ✅ |
-| 12 | DELETE | `/tag` | 删除标签 | ✅ |
-
-> **WARNING**: 私有 API 无官方文档，可能随时变更。如果私有 API 失效，仅影响上述功能，官方 Open API 的功能不受影响。
 
 ## Development
 

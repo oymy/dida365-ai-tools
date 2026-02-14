@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-02-14
+
+### Removed
+- Open API and OAuth 2.0 authentication flow
+- `dotenv` dependency
+- `.env.example` configuration file
+
+### Changed
+- Unified all operations to use private API with cookie authentication
+- Simplified auth: `dida365 auth cookie <token>` replaces the OAuth login/callback flow
+- Simplified `task show`: now only requires `<taskId>` (no longer needs `<projectId>`)
+
 ## [2.0.0] - 2025-02-14
 
 ### Added

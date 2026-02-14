@@ -1,13 +1,5 @@
-export interface Dida365Config {
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
-}
-
 export interface TokenData {
-  access_token: string;
-  token_type?: string;
-  scope?: string;
+  token: string;
   saved_at: number;
 }
 

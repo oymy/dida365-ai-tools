@@ -1,8 +1,5 @@
 import { Command } from "commander";
-import { loadConfig } from "../../core/config.js";
-import { buildAuthUrl, exchangeCodeForToken } from "../../core/auth.js";
 import { saveToken, loadToken } from "../../core/token-store.js";
-import { randomUUID } from "crypto";
 import { formatError } from "../utils/output.js";
 
 export function authCommands(program: Command) {
@@ -11,45 +8,14 @@ export function authCommands(program: Command) {
     .description("Manage authentication with Dida365");
 
   auth
-    .command("login")
-    .description("Start OAuth login flow")
-    .action(async () => {
+    .command("cookie <token>")
+    .description(
+      "Set cookie token for API access (copy 't' cookie from browser DevTools)"
+    )
+    .action(async (token: string) => {
       try {
-        const config = loadConfig();
-
-        if (!config.clientId || !config.clientSecret) {
-          console.error(
-            "Error: DIDA365_CLIENT_ID and DIDA365_CLIENT_SECRET must be set in environment variables or .env file."
-          );
-          process.exit(1);
-        }
-
-        const state = randomUUID();
-        const url = buildAuthUrl(config, state);
-
-        console.log("Please open this URL in your browser to authorize:\n");
-        console.log(url);
-        console.log(
-          "\nAfter authorizing, you will be redirected. Copy the 'code' parameter from the redirect URL."
-        );
-        console.log("Then run: dida365 auth callback <code>");
-      } catch (error) {
-        console.error(formatError(error));
-        process.exit(1);
-      }
-    });
-
-  auth
-    .command("callback <code>")
-    .description("Complete OAuth flow with authorization code")
-    .action(async (code: string) => {
-      try {
-        const config = loadConfig();
-        const tokenData = await exchangeCodeForToken(config, code);
-        await saveToken(tokenData);
-
-        console.log("Authentication successful! Token has been saved.");
-        console.log("You can now use other Dida365 commands.");
+        await saveToken(token);
+        console.log("Cookie token saved! You can now use all Dida365 commands.");
       } catch (error) {
         console.error(formatError(error));
         process.exit(1);
@@ -64,12 +30,15 @@ export function authCommands(program: Command) {
         const token = await loadToken();
 
         if (token) {
-          console.log("✓ Authenticated");
-          console.log(`Token type: ${token.token_type}`);
-          console.log(`Scope: ${token.scope}`);
+          console.log("Status: Authenticated");
+          console.log(
+            `Saved at: ${new Date(token.saved_at).toLocaleString()}`
+          );
         } else {
-          console.log("✗ Not authenticated");
-          console.log("Run 'dida365 auth login' to start the OAuth flow.");
+          console.log("Status: Not authenticated");
+          console.log(
+            "Run 'dida365 auth cookie <token>' to set your cookie from browser."
+          );
         }
       } catch (error) {
         console.error(formatError(error));

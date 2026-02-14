@@ -10,8 +10,7 @@ export function registerSyncTools(server: McpServer) {
     {
       description:
         "Full sync - fetch all tasks, projects, project groups, and tags from Dida365. " +
-        "Returns everything in one request. Useful for getting a complete overview. " +
-        "WARNING: Uses private API.",
+        "Returns everything in one request. Useful for getting a complete overview.",
     },
     async () => {
       try {
@@ -62,7 +61,7 @@ export function registerSyncTools(server: McpServer) {
     "dida365_get_settings",
     {
       description:
-        "Get user settings including timezone, date format, etc. WARNING: Uses private API.",
+        "Get user settings including timezone, date format, etc.",
     },
     async () => {
       try {

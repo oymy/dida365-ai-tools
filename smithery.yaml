@@ -3,36 +3,9 @@
 startCommand:
   type: stdio
 
-configSchema:
-  type: object
-  required:
-    - clientId
-    - clientSecret
-  properties:
-    clientId:
-      type: string
-      description: Dida365 OAuth Client ID from developer.dida365.com
-    clientSecret:
-      type: string
-      description: Dida365 OAuth Client Secret from developer.dida365.com
-    redirectUri:
-      type: string
-      description: OAuth redirect URI
-      default: "http://localhost:8080/callback"
-
 commandFunction:
   |-
   (config) => ({
     command: 'node',
-    args: ['build/mcp/index.js'],
-    env: {
-      DIDA365_CLIENT_ID: config.clientId,
-      DIDA365_CLIENT_SECRET: config.clientSecret,
-      DIDA365_REDIRECT_URI: config.redirectUri || 'http://localhost:8080/callback'
-    }
+    args: ['build/mcp/index.js']
   })
-
-exampleConfig:
-  clientId: your_client_id
-  clientSecret: your_client_secret
-  redirectUri: http://localhost:8080/callback
