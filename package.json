@@ -1,0 +1,65 @@
+{
+  "name": "dida365-ai-tools",
+  "version": "2.0.0",
+  "description": "Dida365 AI Tools - MCP Server & CLI for 滴答清单, manage your tasks with Claude Code or command line",
+  "type": "module",
+  "bin": {
+    "dida365-ai-tools": "./build/mcp/index.js",
+    "dida365-mcp": "./build/mcp/index.js",
+    "dida365": "./build/cli/index.js"
+  },
+  "main": "./build/core/api-client.js",
+  "types": "./build/core/api-client.d.ts",
+  "files": [
+    "build/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    ".env.example",
+    "smithery.yaml",
+    "server.json"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x build/mcp/index.js build/cli/index.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf build/",
+    "prepublishOnly": "npm run clean && npm run build",
+    "mcp": "node build/mcp/index.js",
+    "cli": "node build/cli/index.js"
+  },
+  "keywords": [
+    "dida365",
+    "ticktick",
+    "mcp",
+    "model-context-protocol",
+    "cli",
+    "task-management",
+    "todo",
+    "productivity",
+    "claude",
+    "ai-tools"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools.git"
+  },
+  "homepage": "https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools/issues"
+  },
+  "author": "YOUR_GITHUB_USERNAME",
+  "license": "MIT"
+}

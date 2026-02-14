@@ -1,0 +1,20 @@
+# Source code (build/ is included via files field)
+src/
+tsconfig.json
+
+# Development
+.github/
+.vscode/
+.idea/
+CONTRIBUTING.md
+
+# Environment and secrets
+.env
+.env.*
+.dida365-token.json
+
+# OS
+.DS_Store
+
+# Skills (not part of npm package)
+skills/

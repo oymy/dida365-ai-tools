@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:smithery.ai)",
+      "WebFetch(domain:modelcontextprotocol.info)",
+      "WebFetch(domain:glama.ai)",
+      "WebFetch(domain:registry.modelcontextprotocol.io)",
+      "Bash(git config:*)",
+      "Bash(gh auth:*)",
+      "Bash(chmod:*)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm install:*)",
+      "Bash(gh:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
