@@ -85,6 +85,53 @@ export function taskCommands(program: Command) {
     });
 
   task
+    .command("update <taskId>")
+    .description("Update an existing task")
+    .requiredOption("-p, --project <projectId>", "Project ID")
+    .option("-t, --title <title>", "New title")
+    .option("-c, --content <content>", "New content/description")
+    .option("-d, --due <date>", "New due date (ISO 8601 format)")
+    .option(
+      "--priority <priority>",
+      "Priority (0=none, 1=low, 3=medium, 5=high)"
+    )
+    .option("-j, --json", "Output as JSON")
+    .action(async (taskId: string, options) => {
+      try {
+        const updates: Record<string, unknown> = {
+          id: taskId,
+          projectId: options.project,
+        };
+
+        if (options.title) updates.title = options.title;
+        if (options.content) updates.content = options.content;
+        if (options.due) updates.dueDate = options.due;
+
+        if (options.priority) {
+          const priority = parseInt(options.priority, 10);
+          if (![0, 1, 3, 5].includes(priority)) {
+            console.error("Error: Priority must be 0 (none), 1 (low), 3 (medium), or 5 (high).");
+            process.exit(1);
+          }
+          updates.priority = priority;
+        }
+
+        const result = await batchService.updateTask(
+          updates as { id: string; projectId: string }
+        );
+
+        if (options.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log("Task updated successfully!");
+        }
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  task
     .command("complete <taskId> <projectId>")
     .description("Mark a task as complete")
     .action(async (taskId: string, projectId: string) => {

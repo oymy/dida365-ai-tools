@@ -20,16 +20,16 @@ Dida365（滴答清单）v3.0.0 MCP Server + CLI 工具，使用私有 API + Coo
 | 项目详情与任务 | `dida365_get_project_tasks` | `project show <id>` |
 | 查看任务 | `dida365_get_task` | `task show <taskId>` |
 | 创建任务 | `dida365_create_task` | `task create <title> -p <pid>` |
-| 更新任务 | `dida365_update_task` | - |
+| 更新任务 | `dida365_update_task` | `task update <tid> -p <pid>` |
 | 完成任务 | `dida365_complete_task` | `task complete <pid> <tid>` |
 | 删除任务 | `dida365_delete_task` | `task delete <pid> <tid>` |
 | 按日期/范围查询已完成 | `dida365_get_completed_tasks` | `completed date / range` |
 | 今天完成的任务 | `dida365_get_completed_today` | `completed today` |
-| 昨天完成的任务 | - | `completed yesterday` |
+| 昨天完成的任务 | `dida365_get_completed_yesterday` | `completed yesterday` |
 | 本周完成的任务 | `dida365_get_completed_this_week` | `completed week` |
 | 全量同步（项目/任务/标签） | `dida365_sync` | `sync all` |
 | 获取用户设置 | `dida365_get_settings` | `sync settings` |
-| 获取时区 | - | `sync timezone` |
+| 获取时区 | `dida365_get_timezone` | `sync timezone` |
 | 列出所有标签 | `dida365_list_tags` | `tag list` |
 | 创建标签 | `dida365_create_tag` | `tag create <name>` |
 | 重命名标签 | `dida365_rename_tag` | `tag rename <old> <new>` |
@@ -58,14 +58,14 @@ src/
 │       ├── tag.service.ts         # 标签 CRUD / 重命名 / 合并
 │       └── batch.service.ts       # 批量任务/项目/文件夹操作
 │
-├── mcp/                           # MCP Server 入口（26 个工具）
+├── mcp/                           # MCP Server 入口（28 个工具）
 │   ├── index.ts
 │   └── tools/
 │       ├── auth.tool.ts           # 认证（1 个工具）
 │       ├── projects.tool.ts       # 项目（2 个工具）
 │       ├── tasks.tool.ts          # 任务（5 个工具）
-│       ├── completed.tool.ts      # 已完成任务（3 个工具）
-│       ├── sync.tool.ts           # 同步（2 个工具）
+│       ├── completed.tool.ts      # 已完成任务（4 个工具）
+│       ├── sync.tool.ts           # 同步（3 个工具）
 │       ├── tag.tool.ts            # 标签（6 个工具）
 │       └── batch.tool.ts          # 批量操作（7 个工具）
 │
@@ -74,7 +74,7 @@ src/
     ├── commands/
     │   ├── auth.cmd.ts            # auth cookie / status
     │   ├── project.cmd.ts         # project list / show
-    │   ├── task.cmd.ts            # task create / show / complete / delete
+    │   ├── task.cmd.ts            # task create / show / update / complete / delete
     │   ├── completed.cmd.ts       # completed today / yesterday / week / date / range
     │   ├── sync.cmd.ts            # sync all / settings / timezone
     │   ├── tag.cmd.ts             # tag list / create / rename / color / nest / merge / delete
@@ -189,6 +189,7 @@ dida365 project show <id>       # 项目详情和任务
 dida365 task create "买菜" -p <projectId>
 dida365 task create "开会" -p <projectId> -c "讨论内容" --priority 5
 dida365 task show <taskId>
+dida365 task update <taskId> -p <projectId> -t "新标题" --priority 3
 dida365 task complete <projectId> <taskId>
 dida365 task delete <projectId> <taskId>
 ```

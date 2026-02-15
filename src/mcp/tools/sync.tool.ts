@@ -61,4 +61,20 @@ export function registerSyncTools(server: McpServer) {
       }
     }
   );
+
+  server.registerTool(
+    "dida365_get_timezone",
+    {
+      description:
+        "Get user's timezone setting from Dida365.",
+    },
+    async () => {
+      try {
+        const timezone = await syncService.getTimezone();
+        return successResponse({ timezone });
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
 }

@@ -44,6 +44,10 @@ dida365 task create <title> -p <projectId> -c <content> --priority <0|1|3|5> -d 
 dida365 task show <taskId>
 dida365 task show <taskId> --json
 
+# 更新任务
+dida365 task update <taskId> -p <projectId> -t <newTitle>
+dida365 task update <taskId> -p <projectId> -c <content> --priority <0|1|3|5> -d <dueDate>
+
 # 完成任务
 dida365 task complete <projectId> <taskId>
 
@@ -53,6 +57,7 @@ dida365 task delete <projectId> <taskId>
 
 参数说明：
 - `-p, --project <projectId>` — 项目 ID（必填）
+- `-t, --title <title>` — 任务标题（update 时可选）
 - `-c, --content <content>` — 任务内容
 - `-d, --due <date>` — 截止日期（ISO 8601）
 - `--priority <n>` — 优先级：0=无, 1=低, 3=中, 5=高

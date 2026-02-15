@@ -106,6 +106,44 @@ export function registerCompletedTools(server: McpServer) {
   );
 
   server.registerTool(
+    "dida365_get_completed_yesterday",
+    {
+      description:
+        "Get tasks completed yesterday.",
+      inputSchema: {
+        timezone: z
+          .string()
+          .optional()
+          .describe("Timezone (e.g., 'Asia/Shanghai'). Default: Asia/Shanghai"),
+      },
+    },
+    async ({ timezone }) => {
+      try {
+        const tasks = await completedService.getYesterday(timezone);
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const summary = `Found ${tasks.length} task(s) completed yesterday`;
+        const response = {
+          summary,
+          date: yesterday.toISOString().split("T")[0],
+          count: tasks.length,
+          tasks: tasks.map((task) => ({
+            id: task.id,
+            title: task.title,
+            completedTime: task.completedTime,
+            projectId: task.projectId,
+          })),
+        };
+
+        return successResponse(response);
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
+
+  server.registerTool(
     "dida365_get_completed_this_week",
     {
       description:
