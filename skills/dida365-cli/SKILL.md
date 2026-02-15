@@ -168,4 +168,4 @@ dida365 batch delete-folders <groupId1> [groupId2 ...]
 ## 资源
 
 - [dida365-openapi.md](references/dida365-openapi.md)：官方 Open API 文档，便于离线检索参数与字段。
-- 项目源码：[GitHub](https://github.com/YOUR_GITHUB_USERNAME/dida365-ai-tools)
+- 项目源码：[GitHub](https://github.com/oymy/dida365-ai-tools)
