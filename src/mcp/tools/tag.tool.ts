@@ -1,9 +1,10 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { TagService } from "../../core/services/tag.service.js";
+import { errorResponse } from "../utils/response.js";
 
 export function registerTagTools(server: McpServer) {
-  const service = new TagService();
+  const tagService = new TagService();
 
   server.registerTool(
     "dida365_list_tags",
@@ -13,22 +14,14 @@ export function registerTagTools(server: McpServer) {
     },
     async () => {
       try {
-        const tags = await service.listAll();
+        const tags = await tagService.listAll();
         return {
           content: [
             { type: "text" as const, text: JSON.stringify(tags, null, 2) },
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -46,22 +39,14 @@ export function registerTagTools(server: McpServer) {
     },
     async ({ name, color, parent }) => {
       try {
-        await service.create({ name, color, parent });
+        await tagService.create({ name, color, parent });
         return {
           content: [
             { type: "text" as const, text: `Tag "${name}" created successfully.` },
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -78,7 +63,7 @@ export function registerTagTools(server: McpServer) {
     },
     async ({ oldName, newName }) => {
       try {
-        await service.rename(oldName, newName);
+        await tagService.rename(oldName, newName);
         return {
           content: [
             {
@@ -88,15 +73,7 @@ export function registerTagTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -117,22 +94,14 @@ export function registerTagTools(server: McpServer) {
     },
     async ({ name, color, parent }) => {
       try {
-        await service.update({ name, color, parent });
+        await tagService.update({ name, color, parent });
         return {
           content: [
             { type: "text" as const, text: `Tag "${name}" updated successfully.` },
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -149,7 +118,7 @@ export function registerTagTools(server: McpServer) {
     },
     async ({ fromTag, toTag }) => {
       try {
-        await service.merge(fromTag, toTag);
+        await tagService.merge(fromTag, toTag);
         return {
           content: [
             {
@@ -159,15 +128,7 @@ export function registerTagTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -185,7 +146,7 @@ export function registerTagTools(server: McpServer) {
     },
     async ({ names }) => {
       try {
-        await service.deleteBatch(names);
+        await tagService.deleteBatch(names);
         return {
           content: [
             {
@@ -195,15 +156,7 @@ export function registerTagTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );

@@ -4,9 +4,9 @@
   "description": "Dida365 AI Tools - MCP Server & CLI for 滴答清单, manage your tasks with Claude Code or command line",
   "type": "module",
   "bin": {
-    "dida365-ai-tools": "./build/mcp/index.js",
-    "dida365-mcp": "./build/mcp/index.js",
-    "dida365": "./build/cli/index.js"
+    "dida365-ai-tools": "build/mcp/index.js",
+    "dida365-mcp": "build/mcp/index.js",
+    "dida365": "build/cli/index.js"
   },
   "main": "./build/core/api-client.js",
   "types": "./build/core/api-client.d.ts",

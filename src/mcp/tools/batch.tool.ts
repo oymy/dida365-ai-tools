@@ -1,9 +1,10 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { BatchService } from "../../core/services/batch.service.js";
+import { errorResponse } from "../utils/response.js";
 
 export function registerBatchTools(server: McpServer) {
-  const service = new BatchService();
+  const batchService = new BatchService();
 
   // ---- Task Batch Tools ----
 
@@ -20,7 +21,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ taskId, fromProjectId, toProjectId }) => {
       try {
-        await service.moveTask(taskId, fromProjectId, toProjectId);
+        await batchService.moveTask(taskId, fromProjectId, toProjectId);
         return {
           content: [
             {
@@ -30,15 +31,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -56,7 +49,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ taskId, parentId, projectId }) => {
       try {
-        await service.setSubtask(taskId, parentId, projectId);
+        await batchService.setSubtask(taskId, parentId, projectId);
         return {
           content: [
             {
@@ -66,15 +59,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -97,7 +82,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ items }) => {
       try {
-        await service.deleteTasks(items);
+        await batchService.deleteTasks(items);
         return {
           content: [
             {
@@ -107,15 +92,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -139,7 +116,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ name, color, groupId, viewMode }) => {
       try {
-        await service.createProject({
+        await batchService.createProject({
           id: "",
           name,
           color,
@@ -155,15 +132,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -181,7 +150,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ projectIds }) => {
       try {
-        await service.deleteProjects(projectIds);
+        await batchService.deleteProjects(projectIds);
         return {
           content: [
             {
@@ -191,15 +160,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -217,7 +178,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ name }) => {
       try {
-        await service.createProjectGroup({ name });
+        await batchService.createProjectGroup({ name });
         return {
           content: [
             {
@@ -227,15 +188,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -253,7 +206,7 @@ export function registerBatchTools(server: McpServer) {
     },
     async ({ groupIds }) => {
       try {
-        await service.deleteProjectGroups(groupIds);
+        await batchService.deleteProjectGroups(groupIds);
         return {
           content: [
             {
@@ -263,15 +216,7 @@ export function registerBatchTools(server: McpServer) {
           ],
         };
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );

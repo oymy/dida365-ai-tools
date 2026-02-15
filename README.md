@@ -263,6 +263,10 @@ npm run cli -- <cmd> # 运行 CLI
 | **MCP Registry** | `server.json` | 官方 MCP Server 注册表 |
 | **GitHub Actions** | `.github/workflows/` | CI (build) + CD (npm publish on release) |
 
+## Why Private API?
+
+Dida365 提供了 [Open API](https://developer.dida365.com/)，但其功能是私有 API 的子集，且需要注册开发者应用。本项目选择使用私有 API + Cookie 认证，覆盖更全面、配置更简单。
+
 ## Credits
 
 - 私有 API 实现借鉴自 [ticktick-py](https://github.com/lazeroffmichael/ticktick-py)

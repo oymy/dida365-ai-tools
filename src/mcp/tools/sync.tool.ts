@@ -1,9 +1,10 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SyncService } from "../../core/services/sync.service.js";
+import { errorResponse, successResponse } from "../utils/response.js";
 
 export function registerSyncTools(server: McpServer) {
-  const service = new SyncService();
+  const syncService = new SyncService();
 
   server.registerTool(
     "dida365_sync",
@@ -14,7 +15,7 @@ export function registerSyncTools(server: McpServer) {
     },
     async () => {
       try {
-        const result = await service.fullSync();
+        const result = await syncService.fullSync();
         const summary = {
           summary: `Synced: ${result.tasks.length} tasks, ${result.projects.length} projects, ${result.tags.length} tags, ${result.projectGroups.length} folders`,
           inboxId: result.inboxId,
@@ -38,21 +39,9 @@ export function registerSyncTools(server: McpServer) {
             dueDate: t.dueDate,
           })),
         };
-        return {
-          content: [
-            { type: "text" as const, text: JSON.stringify(summary, null, 2) },
-          ],
-        };
+        return successResponse(summary);
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -65,22 +54,10 @@ export function registerSyncTools(server: McpServer) {
     },
     async () => {
       try {
-        const settings = await service.getSettings();
-        return {
-          content: [
-            { type: "text" as const, text: JSON.stringify(settings, null, 2) },
-          ],
-        };
+        const settings = await syncService.getSettings();
+        return successResponse(settings);
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );

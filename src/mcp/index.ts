@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerAuthTool } from "./tools/auth.tool.js";
@@ -10,9 +11,12 @@ import { registerSyncTools } from "./tools/sync.tool.js";
 import { registerTagTools } from "./tools/tag.tool.js";
 import { registerBatchTools } from "./tools/batch.tool.js";
 
+const require = createRequire(import.meta.url);
+const { version } = require("../../package.json");
+
 const server = new McpServer({
   name: "dida365-ai-tools",
-  version: "3.0.0",
+  version,
 });
 
 registerAuthTool(server);

@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir } from "fs/promises";
+import { readFile, writeFile, mkdir, chmod } from "fs/promises";
 import { join } from "path";
 import { homedir } from "os";
 import type { TokenData } from "./types.js";
@@ -8,8 +8,9 @@ const TOKEN_FILE = join(TOKEN_DIR, "token.json");
 
 export async function saveToken(token: string): Promise<void> {
   const tokenData: TokenData = { token, saved_at: Date.now() };
-  await mkdir(TOKEN_DIR, { recursive: true });
+  await mkdir(TOKEN_DIR, { recursive: true, mode: 0o700 });
   await writeFile(TOKEN_FILE, JSON.stringify(tokenData, null, 2), "utf-8");
+  await chmod(TOKEN_FILE, 0o600);
 }
 
 export async function loadToken(): Promise<TokenData | null> {

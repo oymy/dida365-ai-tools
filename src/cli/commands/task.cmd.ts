@@ -37,7 +37,12 @@ export function taskCommands(program: Command) {
         }
 
         if (options.priority) {
-          taskData.priority = parseInt(options.priority, 10);
+          const priority = parseInt(options.priority, 10);
+          if (![0, 1, 3, 5].includes(priority)) {
+            console.error("Error: Priority must be 0 (none), 1 (low), 3 (medium), or 5 (high).");
+            process.exit(1);
+          }
+          taskData.priority = priority;
         }
 
         const result = await batchService.createTask(

@@ -92,13 +92,14 @@ export class CompletedTaskService {
   }
 
   /**
-   * Convert local time to UTC
-   * Simple implementation - for production, use a proper timezone library like date-fns-tz
+   * Convert a date interpreted in the given timezone to UTC.
+   * Uses Intl API (no external dependencies).
    */
-  private toUTC(date: Date, timezone?: string): Date {
-    // For now, just return the date as-is
-    // TODO: Implement proper timezone conversion using date-fns-tz or similar
-    return date;
+  private toUTC(date: Date, timezone: string = "Asia/Shanghai"): Date {
+    const localStr = date.toLocaleString("en-US", { timeZone: timezone });
+    const localDate = new Date(localStr);
+    const offset = date.getTime() - localDate.getTime();
+    return new Date(date.getTime() + offset);
   }
 
   /**

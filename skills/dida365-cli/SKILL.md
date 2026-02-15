@@ -165,7 +165,11 @@ dida365 batch delete-folders <groupId1> [groupId2 ...]
 | PUT | `/tag/merge` | 合并标签 |
 | DELETE | `/tag?name=` | 删除标签 |
 
+## 为什么不用 Open API
+
+Dida365 提供了 [Open API](https://developer.dida365.com/)，但其功能是私有 API 的子集，且需要注册开发者应用。本项目选择使用私有 API + Cookie 认证，覆盖更全面、配置更简单。
+
 ## 资源
 
-- [dida365-openapi.md](references/dida365-openapi.md)：官方 Open API 文档，便于离线检索参数与字段。
 - 项目源码：[GitHub](https://github.com/oymy/dida365-ai-tools)
+- 私有 API 实现参考：[ticktick-py](https://github.com/lazeroffmichael/ticktick-py)

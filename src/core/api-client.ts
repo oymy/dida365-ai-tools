@@ -43,6 +43,10 @@ async function apiRequest<T>(
     );
   }
 
+  if (!/^[a-fA-F0-9]+$/.test(tokenData.token)) {
+    throw new Error("Invalid token format. Token must contain only hex characters.");
+  }
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Cookie: `t=${tokenData.token}`,

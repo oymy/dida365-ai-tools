@@ -1,9 +1,10 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CompletedTaskService } from "../../core/services/completed.service.js";
+import { errorResponse, successResponse } from "../utils/response.js";
 
 export function registerCompletedTools(server: McpServer) {
-  const service = new CompletedTaskService();
+  const completedService = new CompletedTaskService();
 
   server.registerTool(
     "dida365_get_completed_tasks",
@@ -35,24 +36,16 @@ export function registerCompletedTools(server: McpServer) {
 
         if (date) {
           // Single date query
-          tasks = await service.getByDate(new Date(date), timezone);
+          tasks = await completedService.getByDate(new Date(date), timezone);
         } else if (startDate && endDate) {
           // Date range query
-          tasks = await service.getByDateRange(
+          tasks = await completedService.getByDateRange(
             new Date(startDate),
             new Date(endDate),
             timezone
           );
         } else {
-          return {
-            content: [
-              {
-                type: "text" as const,
-                text: "Error: Please provide either 'date' or both 'startDate' and 'endDate'",
-              },
-            ],
-            isError: true,
-          };
+          return errorResponse("Please provide either 'date' or both 'startDate' and 'endDate'");
         }
 
         const summary = `Found ${tasks.length} completed task(s)`;
@@ -69,24 +62,9 @@ export function registerCompletedTools(server: McpServer) {
           })),
         };
 
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(response, null, 2),
-            },
-          ],
-        };
+        return successResponse(response);
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -105,7 +83,7 @@ export function registerCompletedTools(server: McpServer) {
     },
     async ({ timezone }) => {
       try {
-        const tasks = await service.getToday(timezone);
+        const tasks = await completedService.getToday(timezone);
 
         const summary = `Found ${tasks.length} task(s) completed today`;
         const response = {
@@ -120,24 +98,9 @@ export function registerCompletedTools(server: McpServer) {
           })),
         };
 
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(response, null, 2),
-            },
-          ],
-        };
+        return successResponse(response);
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
@@ -156,7 +119,7 @@ export function registerCompletedTools(server: McpServer) {
     },
     async ({ timezone }) => {
       try {
-        const tasks = await service.getThisWeek(timezone);
+        const tasks = await completedService.getThisWeek(timezone);
 
         const summary = `Found ${tasks.length} task(s) completed this week`;
         const response = {
@@ -170,24 +133,9 @@ export function registerCompletedTools(server: McpServer) {
           })),
         };
 
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(response, null, 2),
-            },
-          ],
-        };
+        return successResponse(response);
       } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error: ${error instanceof Error ? error.message : String(error)}`,
-            },
-          ],
-          isError: true,
-        };
+        return errorResponse(error);
       }
     }
   );
