@@ -1,6 +1,6 @@
 {
   "name": "dida365-ai-tools",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Dida365 AI Tools - MCP Server & CLI for 滴答清单, manage your tasks with Claude Code or command line",
   "type": "module",
   "bin": {
