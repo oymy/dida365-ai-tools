@@ -9,6 +9,7 @@ import { completedCommands } from "./commands/completed.cmd.js";
 import { syncCommands } from "./commands/sync.cmd.js";
 import { tagCommands } from "./commands/tag.cmd.js";
 import { batchCommands } from "./commands/batch.cmd.js";
+import { quadrantCommands } from "./commands/quadrant.cmd.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../../package.json");
@@ -27,5 +28,6 @@ completedCommands(program);
 syncCommands(program);
 tagCommands(program);
 batchCommands(program);
+quadrantCommands(program);
 
 program.parse();
