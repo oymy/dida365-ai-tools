@@ -10,12 +10,28 @@ export function formatTask(task: Dida365Task): string {
     `Project: ${task.projectId}`,
   ];
 
+  if (task.desc) {
+    lines.push(`Description: ${task.desc}`);
+  }
+
   if (task.content) {
     lines.push(`Content: ${task.content}`);
   }
 
+  if (task.startDate) {
+    lines.push(`Start: ${task.startDate}`);
+  }
+
   if (task.dueDate) {
     lines.push(`Due: ${task.dueDate}`);
+  }
+
+  if (task.isAllDay) {
+    lines.push(`All Day: Yes`);
+  }
+
+  if (task.timeZone) {
+    lines.push(`Time Zone: ${task.timeZone}`);
   }
 
   if (task.priority) {

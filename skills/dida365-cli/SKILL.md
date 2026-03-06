@@ -39,6 +39,7 @@ dida365 project show <projectId> --json
 # 创建任务
 dida365 task create <title> -p <projectId>
 dida365 task create <title> -p <projectId> -c <content> --priority <0|1|3|5> -d <dueDate>
+dida365 task create <title> -p <projectId> -s <startDate> -d <dueDate> --all-day --timezone "Asia/Shanghai"
 
 # 查看任务
 dida365 task show <taskId>
@@ -47,19 +48,24 @@ dida365 task show <taskId> --json
 # 更新任务
 dida365 task update <taskId> -p <projectId> -t <newTitle>
 dida365 task update <taskId> -p <projectId> -c <content> --priority <0|1|3|5> -d <dueDate>
+dida365 task update <taskId> -p <projectId> -s <startDate> -d <dueDate> --all-day
 
-# 完成任务
-dida365 task complete <projectId> <taskId>
+# 完成任务（注意：参数顺序是 taskId 在前）
+dida365 task complete <taskId> <projectId>
 
 # 删除任务（危险操作，删除前需确认）
-dida365 task delete <projectId> <taskId>
+dida365 task delete <taskId> <projectId>
 ```
 
 参数说明：
 - `-p, --project <projectId>` — 项目 ID（必填）
 - `-t, --title <title>` — 任务标题（update 时可选）
-- `-c, --content <content>` — 任务内容
+- `-c, --content <content>` — 任务内容（富文本/笔记）
+- `--desc <description>` — 任务描述（纯文本，显示在列表/日历视图）
+- `-s, --start <date>` — 开始日期（ISO 8601）
 - `-d, --due <date>` — 截止日期（ISO 8601）
+- `--all-day` / `--no-all-day` — 全天任务标记
+- `--timezone <tz>` — 时区（如 `Asia/Shanghai`）
 - `--priority <n>` — 优先级：0=无, 1=低, 3=中, 5=高
 - `-j, --json` — JSON 格式输出
 

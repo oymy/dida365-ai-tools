@@ -13,8 +13,12 @@ export function taskCommands(program: Command) {
     .command("create <title>")
     .description("Create a new task")
     .requiredOption("-p, --project <projectId>", "Project ID")
-    .option("-c, --content <content>", "Task content/description")
+    .option("-c, --content <content>", "Task content/notes")
+    .option("--desc <description>", "Task description (plain text, shown in list views)")
+    .option("-s, --start <date>", "Start date (ISO 8601 format)")
     .option("-d, --due <date>", "Due date (ISO 8601 format)")
+    .option("--all-day", "Mark as all-day task")
+    .option("--timezone <tz>", "Time zone (e.g. Asia/Shanghai)")
     .option(
       "--priority <priority>",
       "Priority (0=none, 1=low, 3=medium, 5=high)",
@@ -32,8 +36,24 @@ export function taskCommands(program: Command) {
           taskData.content = options.content;
         }
 
+        if (options.desc) {
+          taskData.desc = options.desc;
+        }
+
+        if (options.start) {
+          taskData.startDate = options.start;
+        }
+
         if (options.due) {
           taskData.dueDate = options.due;
+        }
+
+        if (options.allDay) {
+          taskData.isAllDay = true;
+        }
+
+        if (options.timezone) {
+          taskData.timeZone = options.timezone;
         }
 
         if (options.priority) {
@@ -89,8 +109,13 @@ export function taskCommands(program: Command) {
     .description("Update an existing task")
     .requiredOption("-p, --project <projectId>", "Project ID")
     .option("-t, --title <title>", "New title")
-    .option("-c, --content <content>", "New content/description")
+    .option("-c, --content <content>", "New content/notes")
+    .option("--desc <description>", "New description (plain text)")
+    .option("-s, --start <date>", "New start date (ISO 8601 format)")
     .option("-d, --due <date>", "New due date (ISO 8601 format)")
+    .option("--all-day", "Mark as all-day task")
+    .option("--no-all-day", "Unmark all-day task")
+    .option("--timezone <tz>", "Time zone (e.g. Asia/Shanghai)")
     .option(
       "--priority <priority>",
       "Priority (0=none, 1=low, 3=medium, 5=high)"
@@ -105,7 +130,12 @@ export function taskCommands(program: Command) {
 
         if (options.title) updates.title = options.title;
         if (options.content) updates.content = options.content;
+        if (options.desc) updates.desc = options.desc;
+        if (options.start) updates.startDate = options.start;
         if (options.due) updates.dueDate = options.due;
+        if (options.allDay === true) updates.isAllDay = true;
+        if (options.allDay === false) updates.isAllDay = false;
+        if (options.timezone) updates.timeZone = options.timezone;
 
         if (options.priority) {
           const priority = parseInt(options.priority, 10);
