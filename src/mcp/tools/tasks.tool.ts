@@ -68,8 +68,9 @@ export function registerTaskTools(server: McpServer) {
           .describe("Time zone, e.g. 'Asia/Shanghai'"),
       },
     },
-    async (params) => {
-      const result = await batchService.createTask(params);
+    async ({ allDay, ...rest }) => {
+      const taskData = { ...rest, ...(allDay !== undefined && { isAllDay: allDay }) };
+      const result = await batchService.createTask(taskData);
       return {
         content: [
           {
@@ -113,11 +114,12 @@ export function registerTaskTools(server: McpServer) {
         timeZone: z.string().optional().describe("Time zone"),
       },
     },
-    async ({ taskId, projectId, ...rest }) => {
+    async ({ taskId, projectId, allDay, ...rest }) => {
       const result = await batchService.updateTask({
         id: taskId,
         projectId,
         ...rest,
+        ...(allDay !== undefined && { isAllDay: allDay }),
       });
       return {
         content: [

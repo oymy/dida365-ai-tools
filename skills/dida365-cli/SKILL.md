@@ -60,13 +60,13 @@ dida365 task delete <taskId> <projectId>
 参数说明：
 - `-p, --project <projectId>` — 项目 ID（必填）
 - `-t, --title <title>` — 任务标题（update 时可选）
-- `-c, --content <content>` — 任务内容
+- `-c, --content <content>` — 任务内容（富文本/笔记）
+- `--desc <description>` — 任务描述（纯文本，显示在列表/日历视图）
 - `-s, --start <date>` — 开始日期（ISO 8601）
 - `-d, --due <date>` — 截止日期（ISO 8601）
 - `--all-day` / `--no-all-day` — 全天任务标记
 - `--timezone <tz>` — 时区（如 `Asia/Shanghai`）
 - `--priority <n>` — 优先级：0=无, 1=低, 3=中, 5=高
-- `-j, --json` — JSON 格式输出
 - `-j, --json` — JSON 格式输出
 
 ## 4. 已完成任务查询

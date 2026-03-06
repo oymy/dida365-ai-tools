@@ -13,7 +13,8 @@ export function taskCommands(program: Command) {
     .command("create <title>")
     .description("Create a new task")
     .requiredOption("-p, --project <projectId>", "Project ID")
-    .option("-c, --content <content>", "Task content/description")
+    .option("-c, --content <content>", "Task content/notes")
+    .option("--desc <description>", "Task description (plain text, shown in list views)")
     .option("-s, --start <date>", "Start date (ISO 8601 format)")
     .option("-d, --due <date>", "Due date (ISO 8601 format)")
     .option("--all-day", "Mark as all-day task")
@@ -33,6 +34,10 @@ export function taskCommands(program: Command) {
 
         if (options.content) {
           taskData.content = options.content;
+        }
+
+        if (options.desc) {
+          taskData.desc = options.desc;
         }
 
         if (options.start) {
@@ -104,7 +109,8 @@ export function taskCommands(program: Command) {
     .description("Update an existing task")
     .requiredOption("-p, --project <projectId>", "Project ID")
     .option("-t, --title <title>", "New title")
-    .option("-c, --content <content>", "New content/description")
+    .option("-c, --content <content>", "New content/notes")
+    .option("--desc <description>", "New description (plain text)")
     .option("-s, --start <date>", "New start date (ISO 8601 format)")
     .option("-d, --due <date>", "New due date (ISO 8601 format)")
     .option("--all-day", "Mark as all-day task")
@@ -124,6 +130,7 @@ export function taskCommands(program: Command) {
 
         if (options.title) updates.title = options.title;
         if (options.content) updates.content = options.content;
+        if (options.desc) updates.desc = options.desc;
         if (options.start) updates.startDate = options.start;
         if (options.due) updates.dueDate = options.due;
         if (options.allDay === true) updates.isAllDay = true;

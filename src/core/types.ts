@@ -11,7 +11,7 @@ export interface Dida365Task {
   title: string;
   content?: string;
   desc?: string;
-  allDay?: boolean;
+  isAllDay?: boolean;
   startDate?: string;
   dueDate?: string;
   timeZone?: string;
