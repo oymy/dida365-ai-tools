@@ -112,6 +112,35 @@ export function batchCommands(program: Command) {
     });
 
   batch
+    .command("update-folder <groupId>")
+    .description("Update a project folder/group")
+    .requiredOption("-n, --name <name>", "New folder/group name")
+    .option("-s, --sort-order <sortOrder>", "Sort order")
+    .option("--show-all <showAll>", "Whether to show all projects (true/false)")
+    .action(async (groupId: string, options) => {
+      try {
+        const payload: { id: string; name: string; sortOrder?: number; showAll?: boolean } = {
+          id: groupId,
+          name: options.name,
+        };
+
+        if (options.sortOrder !== undefined) {
+          payload.sortOrder = parseInt(options.sortOrder, 10);
+        }
+
+        if (options.showAll !== undefined) {
+          payload.showAll = String(options.showAll).toLowerCase() === "true";
+        }
+
+        await service.updateProjectGroup(payload);
+        console.log(`Project folder "${groupId}" updated successfully.`);
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  batch
     .command("delete-folders <groupIds...>")
     .description("Delete project folders/groups")
     .action(async (groupIds: string[]) => {

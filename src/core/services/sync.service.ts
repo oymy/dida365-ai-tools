@@ -66,6 +66,14 @@ export class SyncService {
   }
 
   /**
+   * List all project groups/folders
+   */
+  async listProjectGroups(): Promise<Dida365ProjectGroup[]> {
+    const result = await this.fullSync();
+    return result.projectGroups;
+  }
+
+  /**
    * Get a project with its tasks
    */
   async getProjectWithTasks(
