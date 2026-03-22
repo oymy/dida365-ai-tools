@@ -47,6 +47,25 @@ export function registerSyncTools(server: McpServer) {
   );
 
   server.registerTool(
+    "dida365_list_project_groups",
+    {
+      description:
+        "List all project groups/folders in Dida365.",
+    },
+    async () => {
+      try {
+        const groups = await syncService.listProjectGroups();
+        return successResponse({
+          count: groups.length,
+          groups,
+        });
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
+
+  server.registerTool(
     "dida365_get_settings",
     {
       description:

@@ -11,6 +11,14 @@ import type {
   TaskParentPayload,
   UserSettings,
 } from "./types.js";
+
+export interface ApiProbeResult {
+  status: number;
+  ok: boolean;
+  path: string;
+  method: string;
+  text: string;
+}
 import { randomBytes } from "crypto";
 
 const API_BASE_URL = "https://api.dida365.com/api/v2";
@@ -184,4 +192,47 @@ export async function deleteTags(tagNames: string[]): Promise<unknown> {
   tagNames.forEach((name) => params.append("name", name));
 
   return apiRequest<unknown>("DELETE", `/tag?${params}`);
+}
+
+// ---- Column / experimental private API ----
+
+export async function createColumn(
+  projectId: string,
+  name: string
+): Promise<unknown> {
+  return apiRequest<unknown>("POST", "/column", { projectId, name });
+}
+
+export async function probeApi(
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<ApiProbeResult> {
+  const tokenData = await loadToken();
+  if (!tokenData) {
+    throw new Error(
+      "Not authenticated. Run 'dida365 auth cookie <token>' first."
+    );
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Cookie: `t=${tokenData.token}`,
+    ...PRIVATE_HEADERS,
+  };
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+
+  const text = await response.text();
+  return {
+    status: response.status,
+    ok: response.ok,
+    path,
+    method,
+    text,
+  };
 }

@@ -152,4 +152,48 @@ export function batchCommands(program: Command) {
         process.exit(1);
       }
     });
+
+  batch
+    .command("create-column <projectId> <name>")
+    .description("Experimental: create a kanban column in a project")
+    .option("-j, --json", "Output as JSON")
+    .action(async (projectId: string, name: string, options) => {
+      try {
+        const result = await service.createColumn(projectId, name);
+        if (options.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log(`Experimental column create request sent for project ${projectId}: ${name}`);
+        }
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  batch
+    .command("probe-api <method> <path>")
+    .description("Experimental: send a raw private API request")
+    .option("-b, --body <json>", "JSON request body")
+    .option("-j, --json", "Output as JSON")
+    .action(async (method: string, path: string, options) => {
+      try {
+        const body = options.body ? JSON.parse(options.body) : undefined;
+        const result = (await service.probe(method.toUpperCase(), path, body)) as {
+          method: string;
+          path: string;
+          status: number;
+          text: string;
+        };
+        if (options.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log(`${result.method} ${result.path} -> ${result.status}`);
+          console.log(result.text);
+        }
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
 }

@@ -194,6 +194,90 @@ export function registerBatchTools(server: McpServer) {
   );
 
   server.registerTool(
+    "dida365_update_project_group",
+    {
+      description:
+        "Update a project group (folder).",
+      inputSchema: {
+        id: z.string().describe("Project group ID"),
+        name: z.string().describe("New group/folder name"),
+        sortOrder: z.number().optional().describe("Sort order"),
+        showAll: z.boolean().optional().describe("Whether to show all projects"),
+      },
+    },
+    async ({ id, name, sortOrder, showAll }) => {
+      try {
+        await batchService.updateProjectGroup({ id, name, sortOrder, showAll });
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Project group ${id} updated successfully.`,
+            },
+          ],
+        };
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
+
+  server.registerTool(
+    "dida365_create_column_experimental",
+    {
+      description:
+        "Experimental: create a kanban column in a project.",
+      inputSchema: {
+        projectId: z.string().describe("Project ID"),
+        name: z.string().describe("Column name"),
+      },
+    },
+    async ({ projectId, name }) => {
+      try {
+        const result = await batchService.createColumn(projectId, name);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
+
+  server.registerTool(
+    "dida365_probe_api_experimental",
+    {
+      description:
+        "Experimental: send a raw private API request for reverse engineering.",
+      inputSchema: {
+        method: z.string().describe("HTTP method"),
+        path: z.string().describe("API path beginning with /"),
+        body: z.any().optional().describe("Optional JSON body"),
+      },
+    },
+    async ({ method, path, body }) => {
+      try {
+        const result = await batchService.probe(method.toUpperCase(), path, body);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      } catch (error) {
+        return errorResponse(error);
+      }
+    }
+  );
+
+  server.registerTool(
     "dida365_delete_project_groups",
     {
       description:
