@@ -28,8 +28,18 @@ function getQuadrant(task: Task): string {
 
 function formatQuadrantTask(task: Task, projectName: string = ""): string {
   const quadrant = getQuadrant(task);
-  const due = task.dueDate ? ` | Due: ${task.dueDate.split("T")[0]}` : "";
-  const priorityLabels = ["", "🔴", "🟡", "", "🟢"];
+  const nowMs = Date.now();
+  const isOverdue =
+    task.dueDate && new Date(task.dueDate).getTime() < nowMs;
+  const due = task.dueDate
+    ? ` | Due: ${task.dueDate.split("T")[0]}${isOverdue ? " ⚠️" : ""}`
+    : "";
+  const priorityLabels: Record<number, string> = {
+    0: "",
+    1: "🔴",
+    3: "🟡",
+    5: "🔴",
+  };
   const priorityLabel = priorityLabels[task.priority || 0] || "";
   return `[${quadrant}] ${priorityLabel} ${task.title}${due} (${projectName})`;
 }
@@ -41,11 +51,26 @@ function groupByQuadrant(tasks: Task[], projectNames: Map<string, string>): Map<
   quadrants.set("Q3", []);
   quadrants.set("Q4", []);
 
+  const nowMs = Date.now();
+
   for (const task of tasks) {
     if (task.status === 2) continue; // skip completed tasks (status === 2 means completed)
     if (task.status === undefined) continue; // skip tasks without status
     const quadrant = getQuadrant(task);
     quadrants.get(quadrant)!.push(task);
+  }
+
+  // Sort within each quadrant: overdue first, then by due date, then by priority
+  for (const [, qTasks] of quadrants) {
+    qTasks.sort((a, b) => {
+      const aDue = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+      const bDue = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+      const aOverdue = aDue < nowMs;
+      const bOverdue = bDue < nowMs;
+      if (aOverdue !== bOverdue) return aOverdue ? -1 : 1;
+      if (aDue !== bDue) return aDue - bDue;
+      return (b.priority || 0) - (a.priority || 0);
+    });
   }
 
   return quadrants;
