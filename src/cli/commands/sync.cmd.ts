@@ -50,6 +50,37 @@ export function syncCommands(program: Command) {
     });
 
   sync
+    .command("folders")
+    .description("List all project folders/groups")
+    .option("-j, --json", "Output as JSON")
+    .action(async (options) => {
+      try {
+        const groups = await service.listProjectGroups();
+
+        if (options.json) {
+          console.log(formatJSON(groups));
+        } else if (groups.length === 0) {
+          console.log("No project folders/groups found.");
+        } else {
+          console.log("Project folders/groups:\n");
+          groups.forEach((g) => {
+            const extra = [
+              g.id ? `id=${g.id}` : null,
+              g.sortOrder !== undefined ? `sortOrder=${g.sortOrder}` : null,
+              g.showAll !== undefined ? `showAll=${g.showAll}` : null,
+            ]
+              .filter(Boolean)
+              .join(", ");
+            console.log(`  - ${g.name}${extra ? ` (${extra})` : ""}`);
+          });
+        }
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  sync
     .command("settings")
     .description("Get user settings (timezone, date format, etc.)")
     .option("-j, --json", "Output as JSON")

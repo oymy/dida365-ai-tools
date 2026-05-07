@@ -4,6 +4,8 @@ import {
   batchMoveTask,
   batchProjectOperation,
   batchProjectGroupOperation,
+  createColumn,
+  probeApi,
 } from "../api-client.js";
 import type {
   Dida365Task,
@@ -187,5 +189,19 @@ export class BatchService {
    */
   async deleteProjectGroups(groupIds: string[]): Promise<unknown> {
     return batchProjectGroupOperation({ delete: groupIds });
+  }
+
+  /**
+   * Experimental: create a kanban column in a project
+   */
+  async createColumn(projectId: string, name: string): Promise<unknown> {
+    return createColumn(projectId, name);
+  }
+
+  /**
+   * Experimental: raw API probe helper for reverse engineering
+   */
+  async probe(method: string, path: string, body?: unknown): Promise<unknown> {
+    return probeApi(method, path, body);
   }
 }

@@ -112,12 +112,85 @@ export function batchCommands(program: Command) {
     });
 
   batch
+    .command("update-folder <groupId>")
+    .description("Update a project folder/group")
+    .requiredOption("-n, --name <name>", "New folder/group name")
+    .option("-s, --sort-order <sortOrder>", "Sort order")
+    .option("--show-all <showAll>", "Whether to show all projects (true/false)")
+    .action(async (groupId: string, options) => {
+      try {
+        const payload: { id: string; name: string; sortOrder?: number; showAll?: boolean } = {
+          id: groupId,
+          name: options.name,
+        };
+
+        if (options.sortOrder !== undefined) {
+          payload.sortOrder = parseInt(options.sortOrder, 10);
+        }
+
+        if (options.showAll !== undefined) {
+          payload.showAll = String(options.showAll).toLowerCase() === "true";
+        }
+
+        await service.updateProjectGroup(payload);
+        console.log(`Project folder "${groupId}" updated successfully.`);
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  batch
     .command("delete-folders <groupIds...>")
     .description("Delete project folders/groups")
     .action(async (groupIds: string[]) => {
       try {
         await service.deleteProjectGroups(groupIds);
         console.log(`${groupIds.length} folder(s) deleted successfully.`);
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  batch
+    .command("create-column <projectId> <name>")
+    .description("Experimental: create a kanban column in a project")
+    .option("-j, --json", "Output as JSON")
+    .action(async (projectId: string, name: string, options) => {
+      try {
+        const result = await service.createColumn(projectId, name);
+        if (options.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log(`Experimental column create request sent for project ${projectId}: ${name}`);
+        }
+      } catch (error) {
+        console.error(formatError(error));
+        process.exit(1);
+      }
+    });
+
+  batch
+    .command("probe-api <method> <path>")
+    .description("Experimental: send a raw private API request")
+    .option("-b, --body <json>", "JSON request body")
+    .option("-j, --json", "Output as JSON")
+    .action(async (method: string, path: string, options) => {
+      try {
+        const body = options.body ? JSON.parse(options.body) : undefined;
+        const result = (await service.probe(method.toUpperCase(), path, body)) as {
+          method: string;
+          path: string;
+          status: number;
+          text: string;
+        };
+        if (options.json) {
+          console.log(formatJSON(result));
+        } else {
+          console.log(`${result.method} ${result.path} -> ${result.status}`);
+          console.log(result.text);
+        }
       } catch (error) {
         console.error(formatError(error));
         process.exit(1);
