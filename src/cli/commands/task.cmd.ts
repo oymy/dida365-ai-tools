@@ -44,13 +44,13 @@ export function taskCommands(program: Command) {
 
         const { start, end } = getTodayRange();
         const todayMs = start.getTime();
-        const nowMs = Date.now();
+        const endMs = end.getTime();
 
-        // Filter: due today OR overdue (dueDate < today && not completed)
+        // Filter: due today (within today range) OR overdue (due before today)
         const todayTasks = tasks.filter((t) => {
           if (!t.dueDate) return false;
           const dueMs = new Date(t.dueDate).getTime();
-          return dueMs <= nowMs; // due today or overdue
+          return dueMs <= endMs; // overdue OR due today
         });
 
         // Sort: overdue first, then by due date ascending, then by priority descending
@@ -93,7 +93,10 @@ export function taskCommands(program: Command) {
           return;
         }
 
-        const todayStr = start.toISOString().split("T")[0];
+        // Format today's date in Asia/Shanghai timezone reliably
+        const todayStr = new Intl.DateTimeFormat("sv-SE", {
+          timeZone: "Asia/Shanghai",
+        }).format(new Date()); // sv-SE locale gives YYYY-MM-DD
         console.log(`📋 今日任务 (${todayStr}) — ${todayTasks.length} 个`);
         console.log("─".repeat(50));
 
@@ -103,7 +106,7 @@ export function taskCommands(program: Command) {
           const icon = priorityIcons[t.priority || 0] || "";
           const project = projectNames.get(t.projectId) || "";
           const dueStr = t.dueDate
-            ? new Date(t.dueDate).toISOString().split("T")[0]
+            ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date(t.dueDate))
             : "";
           const overdueTag = isOverdue ? " ⚠️逾期" : "";
           console.log(
